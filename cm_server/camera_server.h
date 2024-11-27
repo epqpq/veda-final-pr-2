@@ -19,7 +19,7 @@ private:
     std::string pipeline;
     cv::VideoCapture cap;
     cv::VideoWriter videoWriter;
-    
+
     std::string getIp();
 public:
     cServer();

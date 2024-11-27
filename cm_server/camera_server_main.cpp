@@ -1,4 +1,5 @@
 #include "camera_server.h"
+#include "motionDiff.h"
 
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
@@ -21,6 +22,10 @@ const size_t height = 300;
 
 std::vector<std::string> Labels;
 std::unique_ptr<tflite::Interpreter> interpreter;
+std::mutex mtx;
+std::condition_variable conv;
+bool frameReady = false;
+bool firstFrame = false;
 
 static bool getFileContent(std::string fileName)
 {
@@ -113,22 +118,26 @@ int main(int argc, char** argv)
         exit(-1);
 	}
 
+    motionDiff md(mtx); //움직임 감지 객체
+    md.startThread(); //소켓 통신 시작
+
     while (true) {
         // 카메라에서 프레임 가져오기
-        frame = mainSource.getSource();
-
+        {
+            unique_lock<mutex> lock(mtx);
+            frame = mainSource.getSource();
+            frameReady = true;
+            conv.notify_one();
+        }
+        
         // 움직임 감지
-        /*
-        *
-        *
-        * 
-        *
-        * 
-        * 
-        * 
-        * 
-        * 
-        */
+        if(!firstFrame){
+            md.standard = frame;
+            md.setFrame();
+            firstFrame = true;
+        }
+        md.frameUpdate(frame);
+        md.calcDiff();
 
         // 화재 감지
         /*
