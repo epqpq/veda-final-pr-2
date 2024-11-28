@@ -6,7 +6,6 @@
 #include <opencv2/dnn.hpp>
 #include <opencv2/highgui.hpp>
 #include <fstream>
-#include <iostream>
 #include <opencv2/core/ocl.hpp>
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/kernels/register.h"
@@ -117,9 +116,11 @@ int main(int argc, char** argv)
         cout << "loading labels failed";
         exit(-1);
 	}
+    
+    //스레드 시작
+    mainSource.tcpThread = thread(&cServer::tcpCommunication, &mainSource);
 
     motionDiff md(mtx); //움직임 감지 객체
-    md.startThread(); //소켓 통신 시작
 
     while (true) {
         // 카메라에서 프레임 가져오기
@@ -136,15 +137,24 @@ int main(int argc, char** argv)
             md.setFrame();
             firstFrame = true;
         }
-        md.frameUpdate(frame);
-        md.calcDiff();
+        if(mainSource.power_motion.load()){ //motion detect on
+            md.frameUpdate(frame);
+            if(md.calcDiff())
+               mainSource.tcpFlag.store(1); 
+            else mainSource.tcpFlag.store(0);
+        }
 
         // 화재 감지
         /*
         *
         * 
         * 
-        * 
+        * if(mainSource.power_fire.load()){ //fire detect on
+            if(md.화재감지함수){
+                mainSource.tcpFlag.store(2); //감지O
+            }
+            else mainSource.tcpFlag.store(0); //감지x
+        }
         * 
         * 
         * 
