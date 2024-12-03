@@ -15,8 +15,28 @@ cServer::~cServer()
 int cServer::init()
 {
     gst_init(nullptr, nullptr);
-    pipeline = "libcamerasrc ! video/x-raw,width=640,height=480,format=RGBx ! videoconvert ! appsink";
-    cap.open(pipeline, cv::CAP_GSTREAMER);
+    
+    auto now = chrono::system_clock::now();
+    time_t now_time_t = chrono::system_clock::to_time_t(now);
+    tm* now_tm = localtime(&now_time_t);
+    string year = to_string(now_tm->tm_year + 1900);
+    string month = (now_tm->tm_mon + 1 < 10 ? "0" : "") + to_string(now_tm->tm_mon + 1);
+    string day = (now_tm->tm_mday < 10 ? "0" : "") + to_string(now_tm->tm_mday);
+    videoName = year + month + day + ".mp4";
+
+    pipelineStr = "libcamerasrc ! video/x-raw,width=640,height=480,format=RGBx ! "
+                "tee name=t ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1500 speed-preset=ultrafast ! "
+                "h264parse ! mp4mux ! filesink location=output.mp4 sync=false "
+                "t. ! queue ! videoconvert ! appsink";
+
+    pipeline = gst_parse_launch(pipelineStr.c_str(), nullptr);
+    if (!pipeline) {
+        std::cerr << "Error: Failed to create pipeline.\n";
+        return -1;
+    }
+
+    //cap.open(pipeline, cv::CAP_GSTREAMER);
+    cap.open(pipelineStr, cv::CAP_GSTREAMER);
     if (!cap.isOpened()) {
         std::cerr << "Error: Unable to open the camera with GStreamer pipeline.\n";
         return -1;
@@ -41,6 +61,12 @@ int cServer::init()
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(TCP_PORT);
+    int on = 1;
+    if (setsockopt(ssock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+    {
+        perror("setsockopt()");
+        return -1;
+    }
     if (bind(ssock, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0) {
         perror("bind()");
         exit(1);

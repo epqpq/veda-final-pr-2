@@ -145,26 +145,13 @@ int main(int argc, char** argv)
         }
 
         // 화재 감지
-        /*
-        *
-        * 
-        * 
-        * if(mainSource.power_fire.load()){ //fire detect on
-            if(md.화재감지함수){
-                mainSource.tcpFlag.store(2); //감지O
-            }
-            else mainSource.tcpFlag.store(0); //감지x
+        if(mainSource.power_fire.load()){ //fire detect on
+            detect_from_video(frame);
+            // if(md.화재감지함수){
+            //     mainSource.tcpFlag.store(2); //감지O
+            // }
+            // else mainSource.tcpFlag.store(0); //감지x
         }
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        * 
-        */
-       //test
-       detect_from_video(frame);
 
         // tcp 파이프라인에 프레임 전송하기
         if (mainSource.setSource(frame))
@@ -183,5 +170,8 @@ int main(int argc, char** argv)
         }
     }
 
+    gst_element_set_state(mainSource.pipeline, GST_STATE_NULL);
+    gst_object_unref(mainSource.pipeline);
+    
     return 0;
 }
