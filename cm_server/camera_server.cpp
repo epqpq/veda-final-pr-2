@@ -2,11 +2,7 @@
 
 cServer::cServer()
 {
-    auto now = system_clock::now();
-    time_t now_time_t = system_clock::to_time_t(now);
-    now_tm = localtime(&now_time_t);
-    com_t = now_tm->tm_hour;
-    com_m = now_tm->tm_min;
+
 }
 
 cServer::~cServer()
@@ -14,6 +10,8 @@ cServer::~cServer()
     cap.release();
     cv::destroyAllWindows();
     videoWriter.release();
+    EVP_cleanup();
+    SSL_CTX_free(ctx);
 }
 
 int cServer::init()
@@ -28,19 +26,24 @@ int cServer::init()
     string day = (now_tm->tm_mday < 10 ? "0" : "") + to_string(now_tm->tm_mday);
     videoName = year + month + day + ".mp4";
 
-    pipelineStr = "libcamerasrc ! video/x-raw,width=640,height=480,format=RGBx ! videoconvert ! appsink";
+    pipelineStr = "libcamerasrc ! video/x-raw,width=640,height=480,format=RGBx ! "
+                "tee name=t ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1500 speed-preset=ultrafast ! "
+                "h264parse ! mp4mux ! filesink location=output.mp4 sync=false "
+                "t. ! queue ! videoconvert ! appsink";
 
     pipeline = gst_parse_launch(pipelineStr.c_str(), nullptr);
     if (!pipeline) {
         std::cerr << "Error: Failed to create pipeline.\n";
         return -1;
     }
+
+    //cap.open(pipeline, cv::CAP_GSTREAMER);
     cap.open(pipelineStr, cv::CAP_GSTREAMER);
     if (!cap.isOpened()) {
         std::cerr << "Error: Unable to open the camera with GStreamer pipeline.\n";
         return -1;
     }
-    
+
     // GStreamer TCP 서버를 위한 파이프라인
     std::string gst_pipeline = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=3000 speed-preset=ultrafast ! mpegtsmux ! tcpserversink host=0.0.0.0 port=5000";
 
@@ -49,6 +52,30 @@ int cServer::init()
     if (!videoWriter.isOpened()) {
         std::cerr << "Failed to open GStreamer pipeline.\n";
         return -1;
+    }
+
+    // for openssl
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
+
+    const SSL_METHOD* method;
+
+    method = TLS_server_method();
+    ctx = SSL_CTX_new(method);
+    if (!ctx) {
+        std::cerr << "Unable to create SSL context" << std::endl;
+        ERR_print_errors_fp(stderr);
+        return -1;
+    }
+
+    if (SSL_CTX_use_certificate_file(ctx, "server.crt", SSL_FILETYPE_PEM) <= 0) {
+        ERR_print_errors_fp(stderr);
+        exit(EXIT_FAILURE);
+    }
+
+    if (SSL_CTX_use_PrivateKey_file(ctx, "server.key", SSL_FILETYPE_PEM) <= 0 ) {
+        ERR_print_errors_fp(stderr);
+        exit(EXIT_FAILURE);
     }
 
     // TCP 통신 소켓 오픈
@@ -84,6 +111,15 @@ int cServer::init()
         close(ssock); // 서버 소켓 닫기
         exit(1);
     }
+    
+    int flags = fcntl(csock, F_GETFL, 0);
+    fcntl(csock, F_SETFL, flags | O_NONBLOCK);
+
+    ssl = SSL_new(ctx);
+    SSL_set_fd(ssl, csock);
+
+    if (SSL_accept(ssl) <= 0) 
+        ERR_print_errors_fp(stderr);
 
     inet_ntop(AF_INET, &cliaddr.sin_addr, cIP, BUFSIZ);
     cout << "Client is connected : " << cIP << endl;
@@ -148,28 +184,33 @@ std::string cServer::getIp()
 void cServer::tcpCommunication(){
     //tcp 통신
 
-    int flags = fcntl(csock, F_GETFL, 0);
-    fcntl(csock, F_SETFL, flags | O_NONBLOCK);
-
     while(1){
         now_t = steady_clock::now();
         //send
         //motion_t, fire_t가 초기시간이거나(the first send), 20초가 지났을 때만 전송할 수 있도록 함
         if(tcpFlag.load() == 1 &&
-                (motion_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - motion_t).count() >= 20)){ //motion 알림
+                (motion_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - motion_t).count() >= 5)){ //motion 알림
             motion_t = steady_clock::now();
             cout << "\033[31;47mNotice to client \033[0m\n";
-            if (write(csock, noticeMotion, strlen(noticeMotion)) <= 0) {
+            // if (write(csock, noticeMotion, strlen(noticeMotion)) <= 0) {
+            //     perror("write()");
+            //     break;
+            // }
+            if (SSL_write(ssl, noticeMotion, strlen(noticeMotion)) <= 0) {
                 perror("write()");
                 break;
             }
             tcpFlag.store(0);
         }
         if(tcpFlag.load() == 2 &&
-                (fire_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - fire_t).count() >= 20)){ //fire 알림
+                (fire_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - fire_t).count() >= 5)){ //fire 알림
             fire_t = steady_clock::now();
             cout << "\033[31;47mNotice to client\033[0m\n";
-            if (write(csock, noticeFire, strlen(noticeFire)) <= 0) {
+            // if (write(csock, noticeFire, strlen(noticeFire)) <= 0) {
+            //     perror("write()");
+            //     break;
+            // }
+            if (SSL_write(ssl, noticeFire, strlen(noticeFire)) <= 0) {
                 perror("write()");
                 break;
             }
@@ -178,7 +219,8 @@ void cServer::tcpCommunication(){
 
         //recv
         try{
-            readstr = read(csock, mesg, BUFSIZ);
+            // readstr = read(csock, mesg, BUFSIZ);
+            readstr = SSL_read(ssl, mesg, BUFSIZ);
 
             if(readstr > 0){ //클라이언트로부터 메시지 도착
                 mesg[readstr] = '\0';
@@ -235,37 +277,9 @@ void cServer::tcpCommunication(){
                 break;
         }
     }
+
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
     close(csock);
     close(ssock);
-}
-void cServer::record(const cv::Mat& frame){
-    auto now = system_clock::now();
-    time_t now_time_t = system_clock::to_time_t(now);
-    now_tm = localtime(&now_time_t);
-
-    int now_t = now_tm->tm_hour;
-    int now_m = now_tm->tm_min;
-    
-    if(!bRec) {
-        videoName = setVideoname();
-        recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
-        bRec = true;
-    }
-    if(now_m != com_m){
-        com_m = now_m;
-        recordWriter.release();
-        videoName = setVideoname();
-        recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
-    }
-    recordWriter.write(frame);
-}
-string cServer::setVideoname(){
-    string year = to_string(now_tm->tm_year + 1900);
-    string month = (now_tm->tm_mon + 1 < 10 ? "0" : "") + to_string(now_tm->tm_mon + 1);
-    string day = (now_tm->tm_mday < 10 ? "0" : "") + to_string(now_tm->tm_mday);
-    string hour = (now_tm->tm_hour < 10 ? "0" : "") + to_string(now_tm->tm_hour);
-    string minute = (now_tm->tm_min < 10 ? "0" : "") + to_string(now_tm->tm_min);
-    
-    string filename = year + month + day + "_" + hour + minute +".mp4";
-    return filename;
 }
