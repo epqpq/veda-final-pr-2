@@ -41,12 +41,12 @@ bool FireDetector::detect_from_video(Mat &src){
     }
 
     if (output[0]>0.5) { // FIRE class
-        rectangle(src, Rect(0, 0, src.cols, src.rows), Scalar(0, 0, 255), 3);
-        putText(src, "FIRE", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
+        // rectangle(src, Rect(0, 0, src.cols, src.rows), Scalar(0, 0, 255), 3);
+        // putText(src, "FIRE", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
         return true;
     } else { // CLEAR class
-        rectangle(src, Rect(0, 0, src.cols, src.rows), Scalar(0, 255, 0), 3);
-        putText(src, "CLEAR", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
+        // rectangle(src, Rect(0, 0, src.cols, src.rows), Scalar(0, 255, 0), 3);
+        // putText(src, "CLEAR", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
         return false;
     }
 }

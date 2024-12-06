@@ -21,12 +21,15 @@ int main(int argc, char** argv)
     }
 
     cv::Mat frame;
+
+    bool fireCheck = false;
     
     //스레드 시작
     mainSource.tcpThread = thread(&cServer::tcpCommunication, &mainSource);
   
     motionDiff md(mtx); //움직임 감지 객체
-    unsigned long long count = 0;
+    unsigned long long count1 = 0;
+    unsigned long long count2 = 0;
     while (true) {
         // 카메라에서 프레임 가져오기
         {
@@ -46,21 +49,43 @@ int main(int argc, char** argv)
         }
         if(mainSource.power_motion.load()){ //motion detect on
             md.frameUpdate(frame);
-            if(md.calcDiff())
-               mainSource.tcpFlag.store(1); 
+            if(md.calcDiff()){
+                mainSource.tcpFlag.store(1);
+                if(count1 == 10){
+                    md.setFilename();
+                    imwrite(md.filename + ".png", frame);
+                    count1 = 0;
+                }
+                count1++;
+            }
             else mainSource.tcpFlag.store(0);
         }
 
         // 화재 감지
-        if((count == 1000) && mainSource.power_fire.load()){ //fire detect on
-            //fire_detector.detect_from_video(frame); // bool return하도록 수정됨.
-            if(fire_detector.detect_from_video(frame)){
-                mainSource.tcpFlag.store(2); //감지O
+        if(mainSource.power_fire.load()){
+            if(count2 == 50){ //fire detect on
+                //fire_detector.detect_from_video(frame); // bool return하도록 수정됨.
+                if(fire_detector.detect_from_video(frame)){
+                    mainSource.tcpFlag.store(2); //감지O
+                    fireCheck = true;
+                }
+                else{
+                    mainSource.tcpFlag.store(0); //감지x
+                    fireCheck = false;
+                } 
+                count2 = 0;
             }
-            else mainSource.tcpFlag.store(0); //감지x
-            count = 0;
-        }
 
+            if (fireCheck){
+                rectangle(frame, Rect(0, 0, frame.cols, frame.rows), Scalar(0, 0, 255), 3);
+                putText(frame, "FIRE", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
+            }
+            else{
+                rectangle(frame, Rect(0, 0, frame.cols, frame.rows), Scalar(0, 255, 0), 3);
+                putText(frame, "CLEAR", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
+            }
+            count2++;
+        }
         // tcp 파이프라인에 프레임 전송하기
         if (mainSource.setSource(frame))
         {
@@ -77,7 +102,7 @@ int main(int argc, char** argv)
             std::cout << "Exiting...\n";
             break;
         }
-        count++;
+        
     }
     mainSource.recordWriter.release();
   
