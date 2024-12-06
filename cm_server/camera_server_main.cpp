@@ -8,8 +8,6 @@ using namespace std;
 std::vector<std::string> Labels;
 std::mutex mtx;
 std::condition_variable conv;
-bool frameReady = false;
-bool firstFrame = false;
 
 int main(int argc, char** argv)
 {
@@ -25,24 +23,26 @@ int main(int argc, char** argv)
     cv::Mat frame;
     
     //스레드 시작
-    //mainSource.tcpThread = thread(&cServer::tcpCommunication, &mainSource);
-
+    mainSource.tcpThread = thread(&cServer::tcpCommunication, &mainSource);
+  
     motionDiff md(mtx); //움직임 감지 객체
-
+    unsigned long long count = 0;
     while (true) {
         // 카메라에서 프레임 가져오기
         {
             unique_lock<mutex> lock(mtx);
             frame = mainSource.getSource();
-            frameReady = true;
+            md.frameReady = true;
             conv.notify_one();
         }
-        
-        // 움직임 감지
-        if(!firstFrame){
+
+        mainSource.record(frame);
+
+        //움직임 감지
+        if(!md.firstFrame){
             md.standard = frame;
             md.setFrame();
-            firstFrame = true;
+            md.firstFrame = true;
         }
         if(mainSource.power_motion.load()){ //motion detect on
             md.frameUpdate(frame);
@@ -52,12 +52,13 @@ int main(int argc, char** argv)
         }
 
         // 화재 감지
-        if(mainSource.power_fire.load()){ //fire detect on
-            fire_detector.detect_from_video(frame); // bool return하도록 수정됨.
-            // if(md.화재감지함수){
-            //     mainSource.tcpFlag.store(2); //감지O
-            // }
-            // else mainSource.tcpFlag.store(0); //감지x
+        if((count == 1000) && mainSource.power_fire.load()){ //fire detect on
+            //fire_detector.detect_from_video(frame); // bool return하도록 수정됨.
+            if(fire_detector.detect_from_video(frame)){
+                mainSource.tcpFlag.store(2); //감지O
+            }
+            else mainSource.tcpFlag.store(0); //감지x
+            count = 0;
         }
 
         // tcp 파이프라인에 프레임 전송하기
@@ -72,13 +73,13 @@ int main(int argc, char** argv)
 
         // ESC 키를 누르면 종료
         if (cv::waitKey(1) == 27) {
+            mainSource.recordWriter.release();
             std::cout << "Exiting...\n";
             break;
         }
+        count++;
     }
-
-    gst_element_set_state(mainSource.pipeline, GST_STATE_NULL);
-    gst_object_unref(mainSource.pipeline);
-    
+    mainSource.recordWriter.release();
+  
     return 0;
 }

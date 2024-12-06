@@ -14,7 +14,7 @@ void motionDiff::frameUpdate(Mat mainframe){
 
 void motionDiff::setFrame(){
     unique_lock<mutex> lock(mtx);
-    conv.wait(lock, []{ return frameReady; });
+    conv.wait(lock, [&]{ return this->frameReady; });
 
     if(standard.empty()){
         cout << "standard frame is empty\n";
@@ -31,7 +31,7 @@ void motionDiff::setFrame(){
 int motionDiff::calcDiff(){
     //차영상 계산   
     unique_lock<mutex> lock(mtx);
-    conv.wait(lock, []{ return frameReady; });
+    conv.wait(lock, [&]{ return this->frameReady; });
 
     if(frame.empty()){
         cout << "frame is empty\n";

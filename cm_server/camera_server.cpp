@@ -2,7 +2,11 @@
 
 cServer::cServer()
 {
-
+    auto now = system_clock::now();
+    time_t now_time_t = system_clock::to_time_t(now);
+    now_tm = localtime(&now_time_t);
+    com_t = now_tm->tm_hour;
+    com_m = now_tm->tm_min;
 }
 
 cServer::~cServer()
@@ -24,24 +28,19 @@ int cServer::init()
     string day = (now_tm->tm_mday < 10 ? "0" : "") + to_string(now_tm->tm_mday);
     videoName = year + month + day + ".mp4";
 
-    pipelineStr = "libcamerasrc ! video/x-raw,width=640,height=480,format=RGBx ! "
-                "tee name=t ! queue ! videoconvert ! x264enc tune=zerolatency bitrate=1500 speed-preset=ultrafast ! "
-                "h264parse ! mp4mux ! filesink location=output.mp4 sync=false "
-                "t. ! queue ! videoconvert ! appsink";
+    pipelineStr = "libcamerasrc ! video/x-raw,width=640,height=480,format=RGBx ! videoconvert ! appsink";
 
     pipeline = gst_parse_launch(pipelineStr.c_str(), nullptr);
     if (!pipeline) {
         std::cerr << "Error: Failed to create pipeline.\n";
         return -1;
     }
-
-    //cap.open(pipeline, cv::CAP_GSTREAMER);
     cap.open(pipelineStr, cv::CAP_GSTREAMER);
     if (!cap.isOpened()) {
         std::cerr << "Error: Unable to open the camera with GStreamer pipeline.\n";
         return -1;
     }
-
+    
     // GStreamer TCP 서버를 위한 파이프라인
     std::string gst_pipeline = "appsrc ! videoconvert ! x264enc tune=zerolatency bitrate=3000 speed-preset=ultrafast ! mpegtsmux ! tcpserversink host=0.0.0.0 port=5000";
 
@@ -238,4 +237,35 @@ void cServer::tcpCommunication(){
     }
     close(csock);
     close(ssock);
+}
+void cServer::record(const cv::Mat& frame){
+    auto now = system_clock::now();
+    time_t now_time_t = system_clock::to_time_t(now);
+    now_tm = localtime(&now_time_t);
+
+    int now_t = now_tm->tm_hour;
+    int now_m = now_tm->tm_min;
+    
+    if(!bRec) {
+        videoName = setVideoname();
+        recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
+        bRec = true;
+    }
+    if(now_m != com_m){
+        com_m = now_m;
+        recordWriter.release();
+        videoName = setVideoname();
+        recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
+    }
+    recordWriter.write(frame);
+}
+string cServer::setVideoname(){
+    string year = to_string(now_tm->tm_year + 1900);
+    string month = (now_tm->tm_mon + 1 < 10 ? "0" : "") + to_string(now_tm->tm_mon + 1);
+    string day = (now_tm->tm_mday < 10 ? "0" : "") + to_string(now_tm->tm_mday);
+    string hour = (now_tm->tm_hour < 10 ? "0" : "") + to_string(now_tm->tm_hour);
+    string minute = (now_tm->tm_min < 10 ? "0" : "") + to_string(now_tm->tm_min);
+    
+    string filename = year + month + day + "_" + hour + minute +".mp4";
+    return filename;
 }
