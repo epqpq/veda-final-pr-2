@@ -22,11 +22,11 @@ extern condition_variable conv;
 
 class motionDiff {
     Mat frame, grayscale, diff;
-    string filename;
     mutex& mtx;
 
 public:
     Mat standard;
+    string filename;
     bool frameReady = false;
     bool firstFrame = false;
 

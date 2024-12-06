@@ -47,8 +47,8 @@ int motionDiff::calcDiff(){
     
     if(countNonZero(diff) > 100){ //변화 O
         cout << "\033[0;31mMotion Detected\033[0m\n";
-        setFilename();
-        imwrite(filename + ".png", frame);
+        // setFilename();
+        // imwrite(filename + ".png", frame);
 
         standard = grayscale.clone();
         frameReady = false;
