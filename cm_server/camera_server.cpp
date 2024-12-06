@@ -14,6 +14,8 @@ cServer::~cServer()
     cap.release();
     cv::destroyAllWindows();
     videoWriter.release();
+    EVP_cleanup();
+    SSL_CTX_free(ctx);
 }
 
 int cServer::init()
@@ -51,6 +53,30 @@ int cServer::init()
         return -1;
     }
 
+    // for openssl
+    SSL_load_error_strings();
+    OpenSSL_add_ssl_algorithms();
+
+    const SSL_METHOD* method;
+
+    method = TLS_server_method();
+    ctx = SSL_CTX_new(method);
+    if (!ctx) {
+        std::cerr << "Unable to create SSL context" << std::endl;
+        ERR_print_errors_fp(stderr);
+        return -1;
+    }
+
+    if (SSL_CTX_use_certificate_file(ctx, "server.crt", SSL_FILETYPE_PEM) <= 0) {
+        ERR_print_errors_fp(stderr);
+        exit(EXIT_FAILURE);
+    }
+
+    if (SSL_CTX_use_PrivateKey_file(ctx, "server.key", SSL_FILETYPE_PEM) <= 0 ) {
+        ERR_print_errors_fp(stderr);
+        exit(EXIT_FAILURE);
+    }
+
     // TCP 통신 소켓 오픈
     if ((ssock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("socket()");
@@ -84,6 +110,15 @@ int cServer::init()
         close(ssock); // 서버 소켓 닫기
         exit(1);
     }
+
+    int flags = fcntl(csock, F_GETFL, 0);
+    fcntl(csock, F_SETFL, flags | O_NONBLOCK);
+
+    ssl = SSL_new(ctx);
+    SSL_set_fd(ssl, csock);
+
+    if (SSL_accept(ssl) <= 0) 
+        ERR_print_errors_fp(stderr);
 
     inet_ntop(AF_INET, &cliaddr.sin_addr, cIP, BUFSIZ);
     cout << "Client is connected : " << cIP << endl;
@@ -148,9 +183,6 @@ std::string cServer::getIp()
 void cServer::tcpCommunication(){
     //tcp 통신
 
-    int flags = fcntl(csock, F_GETFL, 0);
-    fcntl(csock, F_SETFL, flags | O_NONBLOCK);
-
     while(1){
         now_t = steady_clock::now();
         //send
@@ -159,7 +191,7 @@ void cServer::tcpCommunication(){
                 (motion_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - motion_t).count() >= 20)){ //motion 알림
             motion_t = steady_clock::now();
             cout << "\033[31;47mNotice to client \033[0m\n";
-            if (write(csock, noticeMotion, strlen(noticeMotion)) <= 0) {
+            if (SSL_write(ssl, noticeMotion, strlen(noticeMotion)) <= 0) {
                 perror("write()");
                 break;
             }
@@ -169,7 +201,7 @@ void cServer::tcpCommunication(){
                 (fire_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - fire_t).count() >= 20)){ //fire 알림
             fire_t = steady_clock::now();
             cout << "\033[31;47mNotice to client\033[0m\n";
-            if (write(csock, noticeFire, strlen(noticeFire)) <= 0) {
+            if (SSL_write(ssl, noticeFire, strlen(noticeFire)) <= 0) {
                 perror("write()");
                 break;
             }
@@ -178,7 +210,7 @@ void cServer::tcpCommunication(){
 
         //recv
         try{
-            readstr = read(csock, mesg, BUFSIZ);
+            readstr = SSL_read(ssl, mesg, BUFSIZ);
 
             if(readstr > 0){ //클라이언트로부터 메시지 도착
                 mesg[readstr] = '\0';
@@ -235,6 +267,8 @@ void cServer::tcpCommunication(){
                 break;
         }
     }
+    SSL_shutdown(ssl);
+    SSL_free(ssl);
     close(csock);
     close(ssock);
 }

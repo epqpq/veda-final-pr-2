@@ -20,6 +20,9 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 using namespace std;
 using namespace chrono;
 
@@ -58,6 +61,10 @@ private:
     GstElement* appsink = nullptr;
     GMainLoop* loop = nullptr;
     std::atomic<bool> terminateFlag = false;
+
+    // for openssl
+    SSL_CTX* ctx;
+    SSL* ssl;
 
 public:
     cv::VideoWriter recordWriter;
