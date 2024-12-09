@@ -55,8 +55,8 @@ private:
     char cIP[BUFSIZ];
     char mesg[BUFSIZ];
     const char* noticeMotion = "1;motion";
-    const char* noticeFireDetected = "1;fire;detect";
-    const char* noticeFireClear = "1;fire;clear";
+    const char* noticeFire = "1;fire";
+    
 
     GstElement* pipeline = nullptr;
     GstElement* appsink = nullptr;
