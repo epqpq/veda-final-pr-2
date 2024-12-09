@@ -197,15 +197,23 @@ void cServer::tcpCommunication(){
             }
             tcpFlag.store(0);
         }
-        if(tcpFlag.load() == 2 &&
+        if(power_fire == true &&
                 (fire_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - fire_t).count() >= 20)){ //fire 알림
             fire_t = steady_clock::now();
-            cout << "\033[31;47mNotice to client\033[0m\n";
-            if (SSL_write(ssl, noticeFire, strlen(noticeFire)) <= 0) {
-                perror("write()");
-                break;
+            if(tcpFlag.load() == 2){
+                cout << "\033[31;47mNotice to client(fire)\033[0m\n";
+                if (write(csock, noticeFireDetected, strlen(noticeFireDetected)) <= 0) {
+                    perror("write()");
+                    break;
+                }
             }
-            tcpFlag.store(0);
+            else if(tcpFlag.load() == 0){
+                cout << "\033[31;47mNotice to client(clear)\033[0m\n";
+                if (write(csock, noticeFireClear, strlen(noticeFireClear)) <= 0) {
+                    perror("write()");
+                    break;
+                }
+            }
         }
 
         //recv

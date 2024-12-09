@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 
         // 화재 감지
         if(mainSource.power_fire.load()){
-            if(count2 == 50){ //fire detect on
+            if(count2 == 150){ //fire detect on
                 //fire_detector.detect_from_video(frame); // bool return하도록 수정됨.
                 if(fire_detector.detect_from_video(frame)){
                     mainSource.tcpFlag.store(2); //감지O
@@ -76,14 +76,14 @@ int main(int argc, char** argv)
                 count2 = 0;
             }
 
-            if (fireCheck){
-                rectangle(frame, Rect(0, 0, frame.cols, frame.rows), Scalar(0, 0, 255), 3);
-                putText(frame, "FIRE", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
-            }
-            else{
-                rectangle(frame, Rect(0, 0, frame.cols, frame.rows), Scalar(0, 255, 0), 3);
-                putText(frame, "CLEAR", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
-            }
+            // if (fireCheck){
+            //     //rectangle(frame, Rect(0, 0, frame.cols, frame.rows), Scalar(0, 0, 255), 3);
+            //     // putText(frame, "FIRE", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
+            // }
+            // else{
+            //     rectangle(frame, Rect(0, 0, frame.cols, frame.rows), Scalar(0, 255, 0), 3);
+            //     putText(frame, "CLEAR", Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 255, 255), 2);
+            // }
             count2++;
         }
         // tcp 파이프라인에 프레임 전송하기
