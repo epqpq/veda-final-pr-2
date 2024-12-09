@@ -197,23 +197,15 @@ void cServer::tcpCommunication(){
             }
             tcpFlag.store(0);
         }
-        if(power_fire == true &&
+        if(tcpFlag.load() == 2 &&
                 (fire_t == steady_clock::time_point::min() || duration_cast<seconds>(now_t - fire_t).count() >= 20)){ //fire 알림
             fire_t = steady_clock::now();
-            if(tcpFlag.load() == 2){
-                cout << "\033[31;47mNotice to client(fire)\033[0m\n";
-                if (write(csock, noticeFireDetected, strlen(noticeFireDetected)) <= 0) {
-                    perror("write()");
-                    break;
-                }
+            cout << "\033[31;47mNotice to client\033[0m\n";
+            if (SSL_write(ssl, noticeFire, strlen(noticeFire)) <= 0) {
+                perror("write()");
+                break;
             }
-            else if(tcpFlag.load() == 0){
-                cout << "\033[31;47mNotice to client(clear)\033[0m\n";
-                if (write(csock, noticeFireClear, strlen(noticeFireClear)) <= 0) {
-                    perror("write()");
-                    break;
-                }
-            }
+            tcpFlag.store(0);
         }
 
         //recv
@@ -290,14 +282,14 @@ void cServer::record(const cv::Mat& frame){
     
     if(!bRec) {
         videoName = setVideoname();
-        recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
+        recordWriter.open(videoName, cv::VideoWriter::fourcc('a','v','c','1'), 30.0, cv::Size(640, 480), true);
         bRec = true;
     }
     if(now_t != com_t){
         com_t = now_t;
         recordWriter.release();
         videoName = setVideoname();
-        recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
+        recordWriter.open(videoName, cv::VideoWriter::fourcc('a','v','c','1'), 30.0, cv::Size(640, 480), true);
     }
     recordWriter.write(frame);
 }

@@ -46,7 +46,7 @@ int motionDiff::calcDiff(){
     threshold(diff, diff, 50, 255, THRESH_BINARY);
     
     if(countNonZero(diff) > 100){ //변화 O
-        cout << "\033[0;31mMotion Detected\033[0m\n";
+        //cout << "\033[0;31mMotion Detected\033[0m\n";
         // setFilename();
         // imwrite(filename + ".png", frame);
 
