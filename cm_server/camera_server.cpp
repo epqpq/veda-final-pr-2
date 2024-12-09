@@ -293,8 +293,8 @@ void cServer::record(const cv::Mat& frame){
         recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
         bRec = true;
     }
-    if(now_m != com_m){
-        com_m = now_m;
+    if(now_t != com_t){
+        com_t = now_t;
         recordWriter.release();
         videoName = setVideoname();
         recordWriter.open(videoName, cv::VideoWriter::fourcc('H','2','6','4'), 30.0, cv::Size(640, 480), true);
@@ -308,6 +308,6 @@ string cServer::setVideoname(){
     string hour = (now_tm->tm_hour < 10 ? "0" : "") + to_string(now_tm->tm_hour);
     string minute = (now_tm->tm_min < 10 ? "0" : "") + to_string(now_tm->tm_min);
     
-    string filename = year + month + day + "_" + hour + minute +".mp4";
+    string filename = year + month + day + "_" + hour + ".mp4";
     return filename;
 }
