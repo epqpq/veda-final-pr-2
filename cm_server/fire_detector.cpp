@@ -36,9 +36,9 @@ bool FireDetector::detect_from_video(Mat &src){
     auto output_tensor = interpreter->tensor(interpreter->outputs()[0]);
     int output_size = output_tensor->dims->data[1]; // 출력 클래스의 개수
     
-    for (int i = 0; i < output_size; i++) {
-        cout << "Class " << i << ": " << output[i] << "\n";
-    }
+    // for (int i = 0; i < output_size; i++) {
+    //     cout << "Class " << i << ": " << output[i] << "\n";
+    // }
 
     if (output[0]>0.5) { // FIRE class
         // rectangle(src, Rect(0, 0, src.cols, src.rows), Scalar(0, 0, 255), 3);
