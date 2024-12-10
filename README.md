@@ -10,7 +10,8 @@ tensorflow-lite 2.18
 opencv 4.10.0  
 flatbuffers 24.3.25
 gstreamer 1.22.0  
-openssl 3.0.15
+openssl 3.0.15  
+WiringPi 3.10
 ## 설치 및 설정 가이드
 ### tensorflow-lite 설치
 Execute the following command to download the .deb package from releases page of the repository:
@@ -36,6 +37,14 @@ sudo apt-get install gstreamer1.0-libcamera libgstreamer1.0-dev libgstreamer-plu
 ### openssl 설치
 ```
 sudo apt install libssl-dev
+```
+### WiringPi 설치
+```
+git clone https://github.com/WiringPi/WiringPi.git
+cd WiringPi
+./build debian
+cd debian-template
+sudo apt install wiringpi_3.10_arm64.deb
 ```
 ## 빌드 및 실행 방법
 ### 빌드
