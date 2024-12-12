@@ -32,6 +32,8 @@ cd WiringPi
 cd debian-template
 sudo apt install wiringpi_3.10_arm64.deb
 ```
+### 화재 감지 모델 설치
+https://drive.google.com/file/d/1J0nECSk0c2xF3D6kbtzY3xVFpShN8DLx/view?usp=sharing
 ## 빌드 및 실행 방법
 ### 빌드
 ```
