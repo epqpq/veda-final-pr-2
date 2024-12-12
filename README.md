@@ -15,3 +15,5 @@ gstreamer 1.22.0
 openssl 3.0.15  
 WiringPi 3.10  
 Dlib 19.24.99
+## 설치 및 사용 방법
+각 폴더에 작성된 README 파일 확인
