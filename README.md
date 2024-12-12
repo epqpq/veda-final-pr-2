@@ -12,6 +12,7 @@ flatbuffers 24.3.25
 gstreamer 1.22.0  
 openssl 3.0.15  
 WiringPi 3.10
+Dlib 19.24.99
 ## 설치 및 설정 가이드
 ### tensorflow-lite 설치
 Execute the following command to download the .deb package from releases page of the repository:
