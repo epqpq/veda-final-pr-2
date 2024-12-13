@@ -1,3 +1,5 @@
+클라이언트 코드를 실행하기 위해서는 QT creator 프로그램이 필요합니다. 
+
 https://gstreamer.freedesktop.org/download/#windows MSVC 64-bit runtime installer development installer 설치
 
 윈도우 창 -> 시스템 환경 변수 편집 -> 고급 -> 환경 변수 -> 시스템 변수 
