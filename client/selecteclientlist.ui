@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SelecteClientList</class>
+ <widget class="QDialog" name="SelecteClientList">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Select Client</string>
+  </property>
+  <widget class="QListWidget" name="clientListWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>300</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">
+     QListWidget {
+         background-color: #000000;
+         font: 14px 'Segoe UI';
+         color: #FFFFFF;
+         padding: 5px;
+     }
+     QListWidget::item {
+         padding: 10px;
+         border-bottom: 1px solid #333333;
+         color: #FFFFFF;
+     }
+     QListWidget::item:hover {
+         background-color: #444444;
+     }
+     QListWidget::item:selected {
+         background-color: #6C63FF;
+         color: white;
+     }
+    </string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

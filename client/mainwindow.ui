@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1440</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>CCTV Monitor</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="mainLayout">
+    <item>
+     <widget class="QTreeWidget" name="menu">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>256</width>
+        <height>400</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="headerHidden">
+       <bool>true</bool>
+      </property>
+      <column>
+       <property name="text">
+        <string>Menu</string>
+       </property>
+      </column>
+      <item>
+       <property name="text">
+        <string>CCTV</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>- CCTV</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>- 추가</string>
+        </property>
+       </item>
+      </item>
+      <item>
+       <property name="text">
+        <string>기능 설정</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>로그</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>녹화 영상 확인</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>FTP</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <widget class="QWidget" name="cctvMainPage">
+       <widget class="QPushButton" name="openWidgetBtn">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>31</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>+</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="closeWidgetBtn">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>0</y>
+          <width>31</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>-</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="FtpPage">
+       <widget class="QGroupBox" name="groupBoxConnection">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>851</width>
+          <height>157</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>FTP Connection</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayoutConnection">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelUrl">
+           <property name="text">
+            <string>IP</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lineEditUrl"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelUsername">
+           <property name="text">
+            <string>Username:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineEditUsername"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelPassword">
+           <property name="text">
+            <string>Password:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="lineEditPassword">
+           <property name="echoMode">
+            <enum>QLineEdit::EchoMode::Password</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QPushButton" name="connectBtn">
+           <property name="text">
+            <string>Connect</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QGroupBox" name="groupBoxDownload">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>240</y>
+          <width>851</width>
+          <height>127</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Download File</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayoutDownload">
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelRemoteFile">
+           <property name="text">
+            <string>Remote File Path:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lineEditRemoteFileDownload"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelLocalFileDownload">
+           <property name="text">
+            <string>Local Save Path:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="lineEditLocalFileDownload"/>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QPushButton" name="downloadBtn">
+           <property name="text">
+            <string>Download</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="logPage">
+       <widget class="QTextEdit" name="logTextEdit">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>1131</width>
+          <height>821</height>
+         </rect>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="clientManagePage">
+       <widget class="QWidget" name="registerClientWidget" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1121</width>
+          <height>791</height>
+         </rect>
+        </property>
+        <widget class="QPushButton" name="registerClientBtn">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>추가</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="deleteClientBtn">
+         <property name="geometry">
+          <rect>
+           <x>120</x>
+           <y>30</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>삭제</string>
+         </property>
+        </widget>
+        <widget class="QTableWidget" name="clientTable">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>70</y>
+           <width>601</width>
+           <height>481</height>
+          </rect>
+         </property>
+         <property name="columnCount">
+          <number>3</number>
+         </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>200</number>
+         </attribute>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>false</bool>
+         </attribute>
+         <column>
+          <property name="text">
+           <string>ID</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>IP</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>connect</string>
+          </property>
+         </column>
+        </widget>
+        <widget class="QPushButton" name="connectClientBtn">
+         <property name="geometry">
+          <rect>
+           <x>230</x>
+           <y>30</y>
+           <width>80</width>
+           <height>24</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>연결</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="settingsPage">
+       <layout class="QVBoxLayout" name="settingsLayout"/>
+      </widget>
+      <widget class="QWidget" name="recordingsPage">
+       <layout class="QVBoxLayout" name="recordingsLayout">
+        <item>
+         <widget class="QWidget" name="recordingWidget" native="true">
+          <widget class="QVideoWidget" name="cctvVideoPlayer" native="true">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>-70</y>
+             <width>1091</width>
+             <height>741</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QLineEdit" name="filePath">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>750</y>
+             <width>551</width>
+             <height>24</height>
+            </rect>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="searchFileBtn">
+           <property name="geometry">
+            <rect>
+             <x>580</x>
+             <y>750</y>
+             <width>21</width>
+             <height>24</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>📁</string>
+           </property>
+          </widget>
+          <widget class="QWidget" name="horizontalLayoutWidget">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>690</y>
+             <width>201</width>
+             <height>42</height>
+            </rect>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="videoSpeedDownBtn">
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 15px;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+}QPushButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}</string>
+              </property>
+              <property name="text">
+               <string>⏪</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="videoPlayBtn">
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 15px;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+}QPushButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}</string>
+              </property>
+              <property name="text">
+               <string>⏸</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="videoSpeedUpBtn">
+              <property name="styleSheet">
+               <string notr="true">QPushButton {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border-radius: 15px;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+}QPushButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}</string>
+              </property>
+              <property name="text">
+               <string>⏩</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="verticalLayoutWidget">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>670</y>
+             <width>1091</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QSlider" name="progressBar">
+              <property name="styleSheet">
+               <string notr="true">QSlider::groove:horizontal {
+  height: 5px;
+  background: #cccccc;
+  border-radius: 2px;
+}QSlider::handle:horizontal {
+  width: 15px;
+  background: #007BFF;
+  border: 1px solid #0056b3;
+  border-radius: 7px;
+  margin: -5px 0;
+}</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QLabel" name="videoPlayRateLabel">
+           <property name="geometry">
+            <rect>
+             <x>240</x>
+             <y>695</y>
+             <width>41</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>15</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>1.0x</string>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="cctvMainWidget" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1440</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QVideoWidget</class>
+   <extends>QWidget</extends>
+   <header>qvideowidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
