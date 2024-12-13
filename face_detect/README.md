@@ -28,6 +28,7 @@ pip3 install face_recognition
 python3 face_detect.py
 ```
 ## 사용법
-인식 하고자 하는 사람의 얼굴 사진을 test_images폴더에 넣은 뒤 카메라로 얼굴을 찍어서 확인.
+인식 하고자 하는 사람의 얼굴 사진을 test_images폴더에 넣은 뒤 카메라로 얼굴을 찍어서 확인.  
+**서버와 연결하지 않는 단독 기능입니다.**
 ## 참조 및 링크
 https://github.com/ageitgey/face_recognition/tree/master
