@@ -35,6 +35,7 @@ sudo apt install wiringpi_3.10_arm64.deb
 ### 화재 감지 모델 설치
 https://drive.google.com/file/d/1J0nECSk0c2xF3D6kbtzY3xVFpShN8DLx/view?usp=sharing
 ### 인증서 발급 및 키 생성
+cm_server 디렉토리에서 다음 명령어를 수행  
 ```
 openssl genrsa -out server.key 2048
 openssl req -new -key server.key -out server.csr
