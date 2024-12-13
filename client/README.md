@@ -6,6 +6,8 @@ QT: 6.8.1
 
 https://gstreamer.freedesktop.org/download/#windows MSVC 64-bit runtime installer와 development installer 설치
 
+C:\Qt\MaintenanceTool.exe 실행 -> 로그인 -> 구성요소 추가 또는 제거 -> Qt (-> Qt Multimedia, Qt Quick 3D, Qt Quick Timeline, Qt Shader Tools, Build Tools -> OpenSSL 3.0.15 Toolkit) 설치
+
 윈도우 창 -> 시스템 환경 변수 편집 -> 고급 -> 환경 변수 -> 시스템 변수 
 기존 PATH에 C:\gstreamer\1.0\msvc_x86_64\bin 추가  
 PKG_CONFIG_PATH 이름으로 변수 새로 만든 후 -> C:\gstreamer\1.0\msvc_x86_64\lib\pkgconfig 추가   
