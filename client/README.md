@@ -1,3 +1,7 @@
+## 테스트 환경
+OS: Window 11  
+QT: 6.8.1  
+
 클라이언트 코드를 실행하기 위해서는 QT creator 프로그램이 필요합니다. 
 
 https://gstreamer.freedesktop.org/download/#windows MSVC 64-bit runtime installer development installer 설치
