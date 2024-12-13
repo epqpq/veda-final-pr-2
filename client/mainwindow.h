@@ -21,8 +21,8 @@
 #include "selecteclientlist.h"
 #include "ftpclient.h"
 
-// #define PIPELINE "tcpclientsrc host=%1 port=5000 ! tsdemux ! h264parse ! avdec_h264 ! videoconvert ! textoverlay text='%1' valignment=top halignment=left font-desc='Sans, 24 ! video/x-raw,format=RGB ! glimagesink sync=false"
-#define PIPELINE    "rtspsrc location=rtsp://210.99.70.120:1935/live/cctv001.stream ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! textoverlay text='%1' valignment=top halignment=left font-desc='Sans 24'! video/x-raw,format=RGB ! glimagesink sync=false"
+#define PIPELINE "tcpclientsrc host=%1 port=5000 ! tsdemux ! h264parse ! avdec_h264 ! videoconvert ! textoverlay text='%2' valignment=top halignment=left font-desc='Sans 24' ! video/x-raw,format=RGB ! glimagesink sync=false"
+// #define PIPELINE    "rtspsrc location=rtsp://210.99.70.120:1935/live/cctv001.stream ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! textoverlay text='%1' valignment=top halignment=left font-desc='Sans 24'! video/x-raw,format=RGB ! glimagesink sync=false"
 
 #define WIDGET_WIDTH    561
 #define WIDGET_HEIGHT   401

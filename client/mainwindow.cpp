@@ -146,7 +146,6 @@ void MainWindow::deleteClient() {
     }
 
     QString clientId = id->text();
-    // qDebug() << "삭제 요청 ID:" << clientId;
 
     auto it = std::find_if(clientList.begin(), clientList.end(),
                            [&clientId](const std::pair<std::shared_ptr<Client>, int>& clientPair) {
@@ -155,7 +154,6 @@ void MainWindow::deleteClient() {
 
     if (it != clientList.end()) {
         auto& selectedClient = it->first;
-        // qDebug() << "삭제 중인 클라이언트 ID:" << selectedClient->getClientID();
 
         GstreamerClient* gstreamerClient = selectedClient->getGstreamerClient();
         if (gstreamerClient) {
@@ -169,7 +167,7 @@ void MainWindow::deleteClient() {
             QLineEdit* idText = page->findChild<QLineEdit*>("idText");
             if (idText && idText->text() == clientId) {
                 ui->stackedWidget->removeWidget(page);
-                delete page; // Page 삭제
+                delete page;
                 break;
             }
         }
@@ -193,10 +191,7 @@ void MainWindow::deleteClient() {
                 }
             }
         }
-        qDebug() << "남은 클라이언트 수 :" << clientList.size();
-        // clientList의 요소를 삭제하기 전에 해당 요소의 포인터가 UI 요소와 연결된 상태라면, 이로 인해 비정상 종료가 발생할 가능성이 있습니다.
-        // clientList.erase(it); // 클라이언트 삭제
-        qDebug() << "남은 클라이언트 수:" << clientList.size();
+        clientList.erase(it); // 클라이언트 삭제
     }
     ui->clientTable->removeRow(selectedRow);
 }
@@ -214,7 +209,6 @@ void MainWindow::handleClientDisconnected(const QString& clientID)
 
     if (it != clientList.end()) {
         auto& client = it->first; // shared_ptr<Client>
-        qDebug() << "삭제 중인 클라이언트 ID:" << client->getClientID();
 
         // GstreamerClient 처리
         GstreamerClient* gstreamerClient = client->getGstreamerClient();
@@ -254,10 +248,6 @@ void MainWindow::handleClientDisconnected(const QString& clientID)
             }
         }
         // clientList.erase(it);
-        qDebug() << "남은 클라이언트 수:" << clientList.size();
-    }
-    else {
-        qDebug() << "삭제하려는 클라이언트를 찾을 수 없습니다: ID =" << clientID;
     }
 }
 
@@ -305,7 +295,8 @@ void MainWindow::connectClient() {
 }
 
 bool MainWindow::addClient(QString& ip, QString& id) {
-    QString pipelineStr = QString(PIPELINE).arg(id);
+    // QString pipelineStr = QString(PIPELINE).arg(id);
+    QString pipelineStr = QString(PIPELINE).arg(ip).arg(id);
     auto client = std::make_unique<Client>();
 
     client->configureClient(pipelineStr, ip, id);
@@ -608,8 +599,6 @@ void MainWindow::setFilePath() {
         videoPlayer->play();
     }
 }
-
-
 
 void MainWindow::playVideo() {
     // 영상이 재생 중일때
