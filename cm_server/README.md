@@ -33,7 +33,8 @@ cd debian-template
 sudo apt install wiringpi_3.10_arm64.deb
 ```
 ### 화재 감지 모델 설치
-https://drive.google.com/file/d/1J0nECSk0c2xF3D6kbtzY3xVFpShN8DLx/view?usp=sharing
+https://drive.google.com/file/d/1J0nECSk0c2xF3D6kbtzY3xVFpShN8DLx/view?usp=sharing  
+설치 이후 cm_server 폴더에 옮겨주세요.  
 ### 인증서 발급 및 키 생성
 cm_server 디렉토리에서 다음 명령어를 수행  
 ```
@@ -41,7 +42,9 @@ openssl genrsa -out server.key 2048
 openssl req -new -key server.key -out server.csr
 openssl x509 -req -in server.csr -signkey server.key -out server.crt -days 365
 ```
-openssl req 명령어 수행 시 Common Name에 카메라의 도메인 이름 또는 ip 주소를 입력해주셔야 합니다.  
+![image](https://github.com/user-attachments/assets/db78f144-23f7-4203-a784-b9da0429a0ea)
+
+**openssl req 명령어 수행 시 위 이미지와 같이 Common Name에 카메라의 도메인 이름 또는 ip 주소를 입력해주셔야 합니다.**  
 그 후 추가된 crt 파일을 client 환경에 옮겨 주시고 경로를 클라이언트 소스코드에 입력해주셔야 합니다.  
 이에 대한 내용은 client README.md 파일에서 확인하실 수 있습니다.
 ## 빌드 및 실행 방법
