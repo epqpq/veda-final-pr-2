@@ -1,6 +1,6 @@
 ## 테스트 환경
 OS: Window 11  
-QT: 6.8.1 - MSVC 2022 64-bit
+QT: 6.8.1 - MSVC 2022 64-bit  
 build version: MinGW 13.1.0 64-bit
 
 클라이언트 코드를 실행하기 위해서는 QT creator 프로그램이 필요합니다. 
