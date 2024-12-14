@@ -28,6 +28,7 @@ bool TcpThread::connectToServer()
     QMutexLocker locker(&mutex);
     // SSL을 지원하는 socket 생성
     socket = new QSslSocket();
+    configureSslCertificates();
     // data 도착 시 handleReadyRead 호출
     connect(socket, &QSslSocket::readyRead, this, &TcpThread::handleDataRead);
     // socket error 발생 시 handleError 호출
