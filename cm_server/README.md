@@ -1,3 +1,7 @@
+## 테스트 환경
+보드: 라즈베리파이 5  
+카메라: raspberry pi camera module v1  
+OS: debian gnu/linux 12 (bookworm)
 ## 설치 및 설정 가이드
 ### tensorflow-lite 설치
 Execute the following command to download the .deb package from releases page of the repository:
