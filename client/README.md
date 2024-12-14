@@ -9,6 +9,10 @@ build version: MinGW 13.1.0 64-bit
 https://gstreamer.freedesktop.org/download/#windows MSVC 64-bit runtime installer와 development installer 설치
 ### QT 추가 요소 설치
 C:\Qt\MaintenanceTool.exe 실행 -> 로그인 -> 구성요소 추가 또는 제거 -> Qt (-> Qt Multimedia, Qt Quick 3D, Qt Quick Timeline, Qt Shader Tools, Build Tools -> OpenSSL 3.0.15 Toolkit) 설치
+![image](https://github.com/user-attachments/assets/e3d9ae44-fd4b-4bd1-9c41-731cfb5a2e1e)
+
+![image](https://github.com/user-attachments/assets/f2679828-11c9-4301-8a49-103af7d4dff8)
+
 ### 환경 변수 설정
 윈도우 창 -> 시스템 환경 변수 편집 -> 고급 -> 환경 변수 -> 시스템 변수 
 ![path_how](https://github.com/user-attachments/assets/811116c0-e340-4e98-b174-22f5d4082ad2)
