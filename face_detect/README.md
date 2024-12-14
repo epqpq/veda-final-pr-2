@@ -1,3 +1,8 @@
+### 테스트 환경
+보드: 라즈베리파이 5  
+카메라: raspberry pi camera module v1  
+OS: debian gnu/linux 12 (bookworm)  
+Python 3.11.2
 ## 설치 및 설정 가이드
 ### gstreamer 설치
 ```
