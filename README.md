@@ -14,7 +14,7 @@ flatbuffers 24.3.25
 gstreamer 1.22.0  
 openssl 3.0.15  
 WiringPi 3.10  
-Dlib 19.24.99
+Dlib 19.24.99  
 Python 3.11.2
 ## 설치 및 사용 방법
 각 폴더에 작성된 README 파일 확인
