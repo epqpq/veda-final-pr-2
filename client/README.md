@@ -15,7 +15,7 @@ C:\Qt\MaintenanceTool.exe 실행 -> 로그인 -> 구성요소 추가 또는 제�
 
 ### 환경 변수 설정
 윈도우 창 -> 시스템 환경 변수 편집 -> 고급 -> 환경 변수 -> 시스템 변수 
-![path_how](https://github.com/user-attachments/assets/811116c0-e340-4e98-b174-22f5d4082ad2)
+![path_how](https://github.com/user-attachments/assets/0deb9d0f-21a2-4bfb-84d3-79165b025b68)
 
 기존 PATH에 C:\gstreamer\1.0\msvc_x86_64\bin 추가  
 새로 만들기 -> 변수 이름: PKG_CONFIG_PATH 입력 -> 변수 값: C:\gstreamer\1.0\msvc_x86_64\lib\pkgconfig 입력   
